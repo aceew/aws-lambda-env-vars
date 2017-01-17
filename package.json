@@ -9,16 +9,17 @@
     "build": "babel src -d build && cp package.json build/package.json && cp README.md build/README.md"
   },
   "keywords": [
-     "aws",
-     "lambda",
-     "environment",
-     "variables",
-     "kms"
-   ],
+    "aws",
+    "lambda",
+    "environment",
+    "variables",
+    "kms"
+  ],
   "author": "Aaron Williams <a@aceew.me>",
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
+    "aws-sdk": "^2.7.22",
     "babel": "^6.5.2",
     "babel-cli": "^6.18.0",
     "babel-preset-es2015": "^6.18.0",

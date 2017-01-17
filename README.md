@@ -3,6 +3,7 @@
 
 The purpose of this package is the easily decrypt and fetch environment variables in Lambda functions, using KMS for decryption. The package supports getting environment variables that have been encrypted in Lambda using a default service key, however the main purpose is for decrypting variables that were encrypted using a custom KMS key. For more information on Lambda environment variables and encryption keys, see the [AWS Documentation](http://docs.aws.amazon.com/lambda/latest/dg/env_variables.html).
 
+Before implementing it is recommended you read the [notes](#notes) section
 ## Contents
 - [Usage](#usage)
 - [Notes](#notes)
@@ -64,6 +65,7 @@ Parameters:
 Returns the string value of the environment variable. No decryption takes plae in code as this is done before Lambda is called.
 
 ## Notes
+ - The package depends on the aws-sdk, however it is not listed as a dependency as it should be installed on your lambda environment by default.
  - The package stores decrypted variables outside the handler so that variables are only encrypted once per container.
  - The current version of the interface relies on Promises, callback support will be added in the future.
 
