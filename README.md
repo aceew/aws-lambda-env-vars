@@ -66,12 +66,12 @@ Returns the string value of the environment variable. No decryption takes plae i
 
 ## Notes
  - The package depends on the aws-sdk, however it is not listed as a dependency as it should be installed on your lambda environment by default.
- - The package stores decrypted variables outside the handler so that variables are only encrypted once per container.
+ - The package stores decrypted variables outside the handler so that variables are only encrypted once per lambda container.
  - The current version of the interface relies on Promises, callback support will be added in the future.
 
 ## Contributing
-- Start a feature branched from master
-- Tests should be written for any new features in the test directory.
+- Start a feature branch from master
+- Tests should be written in the test directory for any new features.
 - Code should follow the installed style guide of airbnb.
 - Tests and linting can be run with `npm test`.
 - Once your feature is complete submit a PR to the master branch.
