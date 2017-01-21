@@ -20,6 +20,8 @@ $ yarn add lambda-env-vars
 ```
 
 ### Lambda Handler Example
+It's important that the instance of the class is defined outside the handler, in order to utilize global variable caching, to cut down on KMS decryption charges.
+
 ES6 Example:
 ```javascript
 import LambdaEnvVars from 'lambda-env-vars';
@@ -80,6 +82,7 @@ Parameters:
 Returns the string value of the environment variable. No decryption takes plae in code as this is done before Lambda is called.
 
 ## Notes
+ - In order to use the decryption feature you'll have to set a KMS encryption key on your lambda function.
  - The package depends on the aws-sdk, however it is not listed as a dependency as it should be installed on your lambda environment by default.
  - The package stores decrypted variables outside the handler so that variables are only encrypted once per lambda container.
  - The current version of the interface relies on Promises, callback support will be added in the future.
