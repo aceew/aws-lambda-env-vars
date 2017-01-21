@@ -16,6 +16,10 @@
     "variables",
     "kms"
   ],
+  "repository": {
+    "url": "https://github.com/aceew/aws-lambda-env-vars",
+    "type": "git"
+  },
   "author": "Aaron Williams <a@aceew.me>",
   "license": "ISC",
   "dependencies": {},

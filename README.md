@@ -1,6 +1,9 @@
 # Lambda Environment Variables
 > A package for decrypting Lambda environment variables encrypted by AWS KMS
 
+[![Coverage Status](https://coveralls.io/repos/github/aceew/aws-lambda-env-vars/badge.svg?branch=master)](https://coveralls.io/github/aceew/aws-lambda-env-vars?branch=master)
+[![Build Status](https://travis-ci.org/aceew/aws-lambda-env-vars.svg?branch=master)](https://travis-ci.org/aceew/aws-lambda-env-vars)
+
 The purpose of this package is the easily decrypt and fetch environment variables in Lambda functions, using KMS for decryption. The package supports getting environment variables that have been encrypted in Lambda using a default service key, however the main purpose is for decrypting variables that were encrypted using a custom KMS key. For more information on Lambda environment variables and encryption keys, see the [AWS Documentation](http://docs.aws.amazon.com/lambda/latest/dg/env_variables.html).
 
 Before implementing it is recommended you read the [notes](#notes) section
