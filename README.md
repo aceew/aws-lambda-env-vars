@@ -20,8 +20,10 @@ $ yarn add lambda-env-vars
 ```
 
 ### Lambda Handler Example
+ES6 Example:
 ```javascript
-import lambdaEnvVars from 'lambda-env-vars';
+import LambdaEnvVars from 'lambda-env-vars';
+const lambdaEnvVars = new LambdaEnvVars()
 
 function handler(event, context, callback) {
   // Get an environment variable encrypted using a custom KMS key.
@@ -35,7 +37,20 @@ function handler(event, context, callback) {
   doSomethingWithSimpleKey(simpleKeyVariable);
 }
 
-export { handler }
+export { handler };
+```
+
+ES5 Example:
+```javascript
+var LambdaEnvVars = require('lambda-env-vars');
+var lambdaEnvVars = new LambdaEnvVars.default();
+
+exports.handler = (event, context, callback) => {
+  console.error(lambdaEnvVars.decryptedVariables);
+  lambdaEnvVars.getEncryptedVariable('testVariable')
+    .then((result) => console.error(result));
+};
+
 ```
 
 ## API Reference
