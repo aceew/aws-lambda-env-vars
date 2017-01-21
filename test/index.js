@@ -25,20 +25,20 @@ lambdaEnvVars.kms.decrypt = () => ({ promise: decryptPromiseStub });
 test('Getting simple variables that exist', (t) => {
   const varKey = 'exists';
   lambdaEnvVars.process.env[varKey] = 'I do exist';
-  const simpleVar = lambdaEnvVars.getSimpleVariable(varKey);
+  const simpleVar = lambdaEnvVars.getDefaultDecryptedValue(varKey);
   t.is(simpleVar, process.env.exists);
   delete lambdaEnvVars.process.env[varKey];
 });
 
 test('Getting simple variables that don\'t exist', (t) => {
-  const simpleVar = lambdaEnvVars.getSimpleVariable();
+  const simpleVar = lambdaEnvVars.getDefaultDecryptedValue();
   t.is(simpleVar, '');
 });
 
 test('Getting encrypted vars that have already been decrypted', (t) => {
   const variableKey = 'randomVarKey';
   lambdaEnvVars.decryptedVariables[variableKey] = 'I have been decrypted';
-  return lambdaEnvVars.getEncryptedVariable(variableKey)
+  return lambdaEnvVars.getCustomDecryptedValue(variableKey)
     .then((result) => {
       t.is(result, lambdaEnvVars.decryptedVariables[variableKey]);
       delete lambdaEnvVars.decryptedVariables[variableKey];
@@ -47,14 +47,14 @@ test('Getting encrypted vars that have already been decrypted', (t) => {
 
 test('Getting encrypted vars that don\'t exist', (t) => {
   const variableKey = 'randomVarKey1';
-  return lambdaEnvVars.getEncryptedVariable(variableKey)
+  return lambdaEnvVars.getCustomDecryptedValue(variableKey)
     .then((result) => {
       t.is(result, '');
     });
 });
 
 test('Getting encrypted vars when an empty string is specified', t => (
-  lambdaEnvVars.getEncryptedVariable()
+  lambdaEnvVars.getCustomDecryptedValue()
     .then((result) => {
       t.is(result, '');
     })
@@ -66,7 +66,7 @@ test(
     const variableKey = 'randomVarKey2';
     lambdaEnvVars.process.env[variableKey] = 'I have not been decrypted';
 
-    return lambdaEnvVars.getEncryptedVariable(variableKey)
+    return lambdaEnvVars.getCustomDecryptedValue(variableKey)
       .then((result) => {
         t.is(result, decryptedValueStub);
         t.is(lambdaEnvVars.decryptedVariables[variableKey], decryptedValueStub);

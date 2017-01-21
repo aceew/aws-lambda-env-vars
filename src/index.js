@@ -17,7 +17,7 @@ export default class LambdaEnvVars {
   }
 
   /**
-   * Returns a variable stored simply in the process node API.
+   * Returns a variable stored simply in the process.env node API.
    *
    * @param {string} variableName
    * The key of the environment variable to fetch.
@@ -25,13 +25,13 @@ export default class LambdaEnvVars {
    * @return {string}
    * Returns the environment variable if it is set, else an empty string.
    */
-  getSimpleVariable(variableName = '') {
+  getDefaultDecryptedValue(variableName = '') {
     return this.process.env[variableName] || '';
   }
 
   /**
-   * Gets an encrypted variable. Will check to see if this has been decrypted already by checking
-   * the in-memory/global cariable cache of decrypted variables.
+   * Gets the decrypted value of an encrypted variable. Will check to see if this has been decrypted
+   * already by checking the in-memory/global cariable cache of decrypted variables.
    *
    * @param {string} variableName
    * The key in process.env to which the variable is stored under.
@@ -40,7 +40,7 @@ export default class LambdaEnvVars {
    * A promise that resolves the value if it is available, else an empty string if it not set in
    * the node environment variables, or a rejected promise if KMS couldn't decypt the value.
    */
-  getEncryptedVariable(variableName = '') {
+  getCustomDecryptedValue(variableName = '') {
     if (this.decryptedVariables[variableName]) {
       return Promise.resolve(this.decryptedVariables[variableName]);
     }

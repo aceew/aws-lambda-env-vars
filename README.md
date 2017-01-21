@@ -32,14 +32,14 @@ const lambdaEnvVars = new LambdaEnvVars()
 
 function handler(event, context, callback) {
   // Get an environment variable encrypted using a custom KMS key.
-  lambdaEnvVars.getEncryptedVariable('envVarKey')
+  lambdaEnvVars.getCustomDecryptedValue('envVarKey')
     .then((decryptedValue) => {
-      doSomethingWithEnvVar(decryptedValue);
+      doSomethingWithDecryptedValue(decryptedValue);
     });
 
   // Get an environment variable that uses a default service key.
-  const simpleKeyVariable = lambdaEnvVars.getSimpleVariable('simpleEnvVarKey');
-  doSomethingWithSimpleKey(simpleKeyVariable);
+  const simpleKeyVariable = lambdaEnvVars.getDefaultDecryptedValue('simpleEnvVarKey');
+  doSomethingWithSimpleVariable(simpleKeyVariable);
 }
 
 export { handler };
@@ -51,9 +51,11 @@ var LambdaEnvVars = require('lambda-env-vars');
 var lambdaEnvVars = new LambdaEnvVars.default();
 
 exports.handler = (event, context, callback) => {
-  console.error(lambdaEnvVars.decryptedVariables);
-  lambdaEnvVars.getEncryptedVariable('testVariable')
-    .then((result) => console.error(result));
+  lambdaEnvVars.getCustomDecryptedValue('testVariable')
+    .then(doSomethingWithDecryptedValue);
+
+  const simpleKeyVariable = lambdaEnvVars.getDefaultDecryptedValue('simpleEnvVarKey');
+  doSomethingWithSimpleVariable(simpleKeyVariable);
 };
 
 ```
@@ -61,8 +63,10 @@ exports.handler = (event, context, callback) => {
 ## API Reference
 
 ### Get an encrypted variable
+Uses KMS to decrypt the cipher text stored under the environment variable of the specified key name. Caches the decrypted variable in the global scope so it is only decrypted once per container, cutting down on KMS decryption costs.
+
 ```javascript
-lambdaEnvVars.getEncryptedVariable('envVarKey');
+lambdaEnvVars.getCustomDecryptedValue('envVarKey');
 ```
 Parameters:
 
@@ -73,8 +77,10 @@ Parameters:
 Returns a promise that resolves the decrypted value, or rejects an error if there were issues connecting to KMS or issues with the encrypted payload.
 
 ### Get an environment variable decrypted using a default service key
+Returns the variable stored under `process.env` for the specified key. Default service key encrypted variables are decrypted before the Lambda invocation meaning the decrypted value is already available under `process.env`.
+
 ```javascript
-const value = lambdaEnvVars.getSimpleVariable('envVarKey');
+const value = lambdaEnvVars.getDefaultDecryptedValue('envVarKey');
 ```
 Parameters:
 

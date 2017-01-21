@@ -1,6 +1,6 @@
 {
   "name": "lambda-env-vars",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple package for decrypting and storing lambda environment variables",
   "main": "index.js",
   "scripts": {
