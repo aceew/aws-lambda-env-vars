@@ -6,7 +6,8 @@
   "scripts": {
     "test": "npm run-script lint && nyc ava test && nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint src/*.js test/*.js",
-    "build": "babel src -d build && cp package.json build/package.json && cp README.md build/README.md"
+    "build": "babel src -d build && cp package.json build/package.json && cp README.md build/README.md",
+    "deploy": "npm run-script build && cd build && npm publish"
   },
   "keywords": [
     "aws",
@@ -19,6 +20,7 @@
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
+    "ava": "^0.17.0",
     "aws-sdk": "^2.7.22",
     "babel": "^6.5.2",
     "babel-cli": "^6.18.0",
@@ -31,5 +33,11 @@
     "eslint-plugin-jsx-a11y": "^3.0.2",
     "eslint-plugin-react": "^6.9.0",
     "nyc": "^10.0.0"
+  },
+  "ava": {
+    "babel": "inherit",
+    "require": [
+      "babel-register"
+    ]
   }
 }
