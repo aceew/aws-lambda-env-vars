@@ -92,3 +92,28 @@ test('Setting a decrypted variable', (t) => {
   const result = lambdaEnvVars.setEncryptedVariable(variableKey, value);
   t.is(result, value);
 });
+
+test('Decrypting list of env vars returns a promise that resolves the values', (t) => {
+  const keys = ['keyName1', 'keyName2'];
+  keys.forEach((keyName) => {
+    lambdaEnvVars.process.env[keyName] = 'Some value';
+  });
+
+  return lambdaEnvVars.getCustomDecryptedValueList(keys)
+    .then((resultObject) => {
+      t.is(typeof resultObject, 'object');
+
+      keys.forEach((keyName) => {
+        t.is(resultObject[keyName], decryptedValueStub);
+        delete lambdaEnvVars.process.env[keyName];
+      });
+    });
+});
+
+test('Decrypting list of env vars when an empty array is specified, returns empty object', t => (
+  lambdaEnvVars.getCustomDecryptedValueList()
+    .then((result) => {
+      t.is(typeof result, 'object');
+      t.is(Object.keys(result).length, 0);
+    })
+));
