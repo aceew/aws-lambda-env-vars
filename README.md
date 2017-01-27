@@ -7,6 +7,7 @@
 The purpose of this package is the easily decrypt and fetch environment variables in Lambda functions, using KMS for decryption. The package supports getting environment variables that have been encrypted in Lambda using a default service key, however the main purpose is for decrypting variables that were encrypted using a custom KMS key. For more information on Lambda environment variables and encryption keys, see the [AWS Documentation](http://docs.aws.amazon.com/lambda/latest/dg/env_variables.html).
 
 Before implementing it is recommended you read the [notes](#notes) section
+
 ## Contents
 - [Usage](#usage)
 - [Notes](#notes)
