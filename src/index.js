@@ -55,7 +55,7 @@ export default class LambdaEnvVars {
 
   /**
    * Decrypts a list of environment variables and returns them in an object where the keys are the
-   * env variable keys and the names are the decrypted values.
+   * env variable keys and the values are the decrypted values.
    *
    * @param {string[]} variableNames
    * An array of environment variable keys to decrypt.
