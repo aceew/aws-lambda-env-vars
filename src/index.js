@@ -54,6 +54,31 @@ export default class LambdaEnvVars {
   }
 
   /**
+   * Decrypts a list of environment variables and returns them in an object where the keys are the
+   * env variable keys and the values are the decrypted values.
+   *
+   * @param {string[]} variableNames
+   * An array of environment variable keys to decrypt.
+   *
+   * @return {Promise}
+   * A promise that resolves an object containing the decrypted values where the keys are the items
+   * specified in the params variableNames.
+   */
+  getCustomDecryptedValueList(variableNames = []) {
+    const decryptedVariablesObject = {};
+
+    const decryptedValuePromiseList = variableNames.map(envVar => (
+      this.getCustomDecryptedValue(envVar)
+        .then((decryptedValue) => {
+          decryptedVariablesObject[envVar] = decryptedValue;
+        })
+    ));
+
+    return Promise.all(decryptedValuePromiseList)
+      .then(() => decryptedVariablesObject);
+  }
+
+  /**
    * Sets the environment variable to the decryptedVariable object so it is cached per container.
    *
    * @param {string} variableName

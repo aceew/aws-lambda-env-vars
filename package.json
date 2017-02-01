@@ -22,7 +22,9 @@
   },
   "author": "Aaron Williams <a@aceew.me>",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "babel-runtime": "^6.6.1"
+  },
   "devDependencies": {
     "ava": "^0.17.0",
     "aws-sdk": "^2.7.22",

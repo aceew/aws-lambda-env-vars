@@ -63,7 +63,7 @@ exports.handler = (event, context, callback) => {
 
 ## API Reference
 
-### Get an encrypted variable
+### Decrypt an environment variable that uses a custom KMS key
 Uses KMS to decrypt the cipher text stored under the environment variable of the specified key name. Caches the decrypted variable in the global scope so it is only decrypted once per container, cutting down on KMS decryption costs.
 
 ```javascript
@@ -77,6 +77,23 @@ Parameters:
 
 Returns a promise that resolves the decrypted value, or rejects an error if there were issues connecting to KMS or issues with the encrypted payload.
 
+### Decrypt multiple environment variables that use a custom KMS key
+Like the single variable, uses KMS to decrypt the cipher text stored under keys in the `process.env` object (Lambda environment variables). Again, the decrypted values are cached in the global scope, so the variables are only encrypted once per Lambda container. Multiple environment variable keys can be specified and they will be returned as keys to an object where the values are decrypted.
+
+```javascript
+lambdaEnvVars.getCustomDecryptedValueList(['envVarKey1', 'envVarKey2']);
+// returns { envVarKey1: 'Decrypted variable', envVarKey2: 'Decrypted variable' }
+```
+
+Parameters:
+
+| Name | Type | Default | Info |
+| --- | --- | --- | --- |
+| variableNames | Array | [] | Keys in process.env to which encrypted environment variables are stored under. |
+
+Returns an object containing the decrypted values where the keys are the items specified in the params `variableNames`.
+
+
 ### Get an environment variable decrypted using a default service key
 Returns the variable stored under `process.env` for the specified key. Default service key encrypted variables are decrypted before the Lambda invocation meaning the decrypted value is already available under `process.env`.
 
@@ -89,7 +106,8 @@ Parameters:
 | --- | --- | --- | --- |
 | variableName | string | '' | The key in process.env to which the variable is stored under. |
 
-Returns the string value of the environment variable. No decryption takes plae in code as this is done before Lambda is called.
+Returns the string value of the environment variable. No decryption takes place in code as this is done before Lambda is called.
+
 
 ## Notes
  - In order to use the decryption feature you'll have to set a KMS encryption key on your lambda function.
