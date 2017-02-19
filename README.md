@@ -29,7 +29,7 @@ It's important that the instance of the class is defined outside the handler, in
 ES6 Example:
 ```javascript
 import LambdaEnvVars from 'lambda-env-vars';
-const lambdaEnvVars = new LambdaEnvVars()
+const lambdaEnvVars = new LambdaEnvVars();
 
 function handler(event, context, callback) {
   // Get an environment variable encrypted using a custom KMS key.
