@@ -10,10 +10,15 @@ Before implementing it is recommended you read the [notes](#notes) section
 
 ## Contents
 - [Usage](#usage)
-- [Notes](#notes)
+- [FAQs](#FAQs)
 - [Contributing](#contributing)
 
 ## Usage
+
+### AWS config
+When using encrypted environment variables you will need to create a KMS key in IAM and give usage permission to the role that your Lambda function has been assigned. You then need to configure your Lambda function to use the new KMS key by default. This can be found in the Lambda function under
+`Configuration -> Advanced settings -> KMS key`.
+
 ### Add lambda-env-vars to your project
 ```console
 $ npm install --save lambda-env-vars
@@ -108,12 +113,17 @@ Parameters:
 
 Returns the string value of the environment variable. No decryption takes place in code as this is done before Lambda is called.
 
+## FAQs
 
-## Notes
- - In order to use the decryption feature you'll have to set a KMS encryption key on your lambda function.
- - The package depends on the aws-sdk, however it is not listed as a dependency as it should be installed on your lambda environment by default.
- - The package stores decrypted variables outside the handler so that variables are only encrypted once per lambda container.
- - The current version of the interface relies on Promises, callback support will be added in the future.
+### My Lambda config exceeds 4KB. What do I do?
+Lambda imposes a 4KB limit on function config, this is inclusive of environment variables. By using a few encrypted environment variables it easy to quickly reach this limit.
+
+### Why is the aws-sdk a dev dependency?
+The package depends on the aws-sdk, however it is not listed as a dependency as it should be installed on your lambda environment by default.
+
+### Doesn't KMS decryption quite expensive?
+Yes, however as it is recommended in AWS's KMS helper code, the decrypted variables are stored in memory so only the first invocation of a Lambda function container incurs a KMS cost. All requests after this point will receive the var stored in memory.
+
 
 ## Contributing
 - Start a feature branch from master
