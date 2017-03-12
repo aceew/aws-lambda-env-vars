@@ -6,7 +6,7 @@
 
 The purpose of this package is the easily decrypt and fetch environment variables in Lambda functions, using KMS for decryption. The package supports getting environment variables that have been encrypted in Lambda using a default service key, however the main purpose is for decrypting variables that were encrypted using a custom KMS key. For more information on Lambda environment variables and encryption keys, see the [AWS Documentation](http://docs.aws.amazon.com/lambda/latest/dg/env_variables.html).
 
-Before implementing it is recommended you read the [notes](#notes) section
+Before implementing it is recommended you read the [FAQs](#faqs) section
 
 ## Contents
 - [Usage](#usage)
@@ -116,7 +116,7 @@ Returns the string value of the environment variable. No decryption takes place 
 ## FAQs
 
 ### My Lambda config exceeds 4KB. What do I do?
-Lambda imposes a 4KB limit on function config, this is inclusive of environment variables. By using a few encrypted environment variables it easy to quickly reach this limit.
+Lambda imposes a 4KB limit on function config, this is inclusive of environment variables. and by using a few encrypted environment variables it easy to quickly reach this limit. The way this package recommends using environment variables when the Lambda config reaches 4KB is by storing a file in S3 that is encrypted at rest and pulling this down on the first invocation of the Lambda function and caching it for reduced calls to S3.
 
 ### Why is the aws-sdk a dev dependency?
 The package depends on the aws-sdk, however it is not listed as a dependency as it should be installed on your lambda environment by default.

@@ -38,6 +38,7 @@ test('Getting simple variables that don\'t exist', (t) => {
 test('Getting encrypted vars that have already been decrypted', (t) => {
   const variableKey = 'randomVarKey';
   lambdaEnvVars.decryptedVariables[variableKey] = 'I have been decrypted';
+
   return lambdaEnvVars.getCustomDecryptedValue(variableKey)
     .then((result) => {
       t.is(result, lambdaEnvVars.decryptedVariables[variableKey]);
@@ -99,7 +100,7 @@ test('Decrypting list of env vars returns a promise that resolves the values', (
     lambdaEnvVars.process.env[keyName] = 'Some value';
   });
 
-  return lambdaEnvVars.getCustomDecryptedValueList(keys)
+  return lambdaEnvVars.getCustomDecryptedValueList(keys, {})
     .then((resultObject) => {
       t.is(typeof resultObject, 'object');
 
@@ -117,3 +118,110 @@ test('Decrypting list of env vars when an empty array is specified, returns empt
       t.is(Object.keys(result).length, 0);
     })
 ));
+
+test('Setting default parameters', (t) => {
+  const defaultEnvVarsInstance = new LambdaEnvVars({ location: 's3' });
+  t.is(typeof defaultEnvVarsInstance.defaultParams, 'object');
+  t.is(defaultEnvVarsInstance.defaultParams.location, 's3');
+});
+
+test('Building request params: Rejects when location is invalid', (t) => {
+  const params = { location: 'invalid' };
+  return lambdaEnvVars.buildParams(params)
+    .catch((error) => {
+      t.is(typeof error.message, 'string');
+    });
+});
+
+test('Building request params: Rejects when s3Config is empty', (t) => {
+  const params = { location: 's3' };
+  return lambdaEnvVars.buildParams(params)
+    .catch((error) => {
+      t.is(typeof error.message, 'string');
+    });
+});
+
+test('Building request params: Rejects when s3Config is missing bucketName', (t) => {
+  const params = {
+    location: 's3',
+    s3Config: {
+      bucketRegion: 'bucketRegion',
+      fileName: 'fileName',
+    },
+  };
+
+  return lambdaEnvVars.buildParams(params)
+    .catch((error) => {
+      t.is(typeof error.message, 'string');
+    });
+});
+
+test('Building request params: Rejects when s3Config is missing bucketRegion', (t) => {
+  const params = {
+    location: 's3',
+    s3Config: {
+      bucketName: 'bucketName',
+      fileName: 'fileName',
+    },
+  };
+
+  return lambdaEnvVars.buildParams(params)
+    .catch((error) => {
+      t.is(typeof error.message, 'string');
+    });
+});
+
+test('Building request params: Rejects when s3Config is missing fileName', (t) => {
+  const params = {
+    location: 's3',
+    s3Config: {
+      bucketName: 'bucketName',
+      bucketRegion: 'bucketRegion',
+    },
+  };
+
+  return lambdaEnvVars.buildParams(params)
+    .catch((error) => {
+      t.is(typeof error.message, 'string');
+    });
+});
+
+test('Building request params: Resolves the params object', (t) => {
+  const params = {
+    location: 's3',
+    s3Config: {
+      bucketName: 'bucketName',
+      bucketRegion: 'bucketRegion',
+      fileName: 'fileName',
+    },
+  };
+
+  return lambdaEnvVars.buildParams(params)
+    .then((result) => {
+      t.is(typeof result, 'object');
+    });
+});
+
+test('Building request params: Uses the default params defined by the constructor', t => (
+  lambdaEnvVars.buildParams()
+    .then((result) => {
+      t.is(typeof result, 'object');
+    })
+));
+
+
+test('Getting var from s3 file: Resolves the variable when it\'s already set', () => {
+
+});
+
+test('Getting var from s3 file: Rejects when the s3 file is not valid json', () => {
+
+});
+
+test('Getting var from s3 file: Resolves the file once fetched from S3', () => {
+
+});
+
+test('Getting var from s3 file: Resolves the file once fetched from S3', () => {
+
+});
