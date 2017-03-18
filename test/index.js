@@ -19,6 +19,26 @@ const decryptPromiseStub = () => {
   return Promise.resolve(result);
 };
 
+const getObjectValue = { variable: 'value' };
+
+lambdaEnvVars.s3.getObject = s3Params => ({
+  promise: () => {
+    const result = {
+      Body: {
+        toString() {
+          if (s3Params.Key === 'invalid-json.json') {
+            return '{ some: invalid json string}';
+          }
+
+          return JSON.stringify(getObjectValue);
+        },
+      },
+    };
+
+    return Promise.resolve(result);
+  },
+});
+
 // eslint-disable-next-line
 lambdaEnvVars.kms.decrypt = () => ({ promise: decryptPromiseStub });
 
@@ -74,6 +94,27 @@ test(
         delete lambdaEnvVars.process.env[variableKey];
       });
   });
+
+test('Getting custom vars, uses s3 when the location is specified', (t) => {
+  const params = {
+    location: 's3',
+    s3Config: {
+      bucketRegion: 'eu-west-1',
+      bucketName: 'bucketName',
+      fileName: 'file-name-4.json',
+    },
+  };
+
+  const storedVarKey = params.s3Config.bucketRegion + params.s3Config.bucketName +
+    params.s3Config.fileName;
+
+  lambdaEnvVars.s3Vars[storedVarKey] = { variableName: 'value' };
+
+  return lambdaEnvVars.getCustomDecryptedValue('variableName', params)
+    .then((result) => {
+      t.is(result, lambdaEnvVars.s3Vars[storedVarKey].variableName);
+    });
+});
 
 test('Decrypting a variable', (t) => {
   const variableKey = 'randomVarKey3';
@@ -210,18 +251,67 @@ test('Building request params: Uses the default params defined by the constructo
 ));
 
 
-test('Getting var from s3 file: Resolves the variable when it\'s already set', () => {
+test(
+  'Getting var from s3 file: Resolves undefined when the file is stored but variable is undefined',
+  (t) => {
+    const defaultS3Config = {
+      bucketRegion: 'eu-west-1',
+      fileName: 'file-name-1.json',
+      bucketName: 'bucketName',
+    };
 
+    const storedVarKey = defaultS3Config.bucketRegion + defaultS3Config.bucketName +
+      defaultS3Config.fileName;
+
+    lambdaEnvVars.s3Vars[storedVarKey] = {};
+
+    return lambdaEnvVars.getVarFromS3File('variableName', defaultS3Config)
+      .then((result) => {
+        t.is(result, undefined);
+      });
+  },
+);
+
+test('Getting var from s3 file: Resolves var when the file is stored', (t) => {
+  const defaultS3Config = {
+    bucketRegion: 'eu-west-1',
+    bucketName: 'bucketName',
+    fileName: 'file-name-2.json',
+  };
+
+  const storedVarKey = defaultS3Config.bucketRegion + defaultS3Config.bucketName +
+    defaultS3Config.fileName;
+
+  lambdaEnvVars.s3Vars[storedVarKey] = { variableName: 'value' };
+
+  return lambdaEnvVars.getVarFromS3File('variableName', defaultS3Config)
+    .then((result) => {
+      t.is(result, lambdaEnvVars.s3Vars[storedVarKey].variableName);
+    });
 });
 
-test('Getting var from s3 file: Rejects when the s3 file is not valid json', () => {
+test('Getting var from s3 file: Rejects when the s3 file is not valid json', (t) => {
+  const defaultS3Config = {
+    bucketRegion: 'eu-west-1',
+    fileName: 'invalid-json.json',
+    bucketName: 'bucketName',
+  };
 
+  return lambdaEnvVars.getVarFromS3File('', defaultS3Config)
+    .catch((error) => {
+      t.is(error instanceof Error, true);
+    });
 });
 
-test('Getting var from s3 file: Resolves the file once fetched from S3', () => {
+test('Getting var from s3 file: Resolves the file once fetched from S3', (t) => {
+  const defaultS3Config = {
+    bucketRegion: 'eu-west-1',
+    fileName: 'file-name-3.json',
+    bucketName: 'bucketName',
+  };
 
-});
-
-test('Getting var from s3 file: Resolves the file once fetched from S3', () => {
-
+  return lambdaEnvVars.getVarFromS3File('variable', defaultS3Config)
+    .then((result) => {
+      t.is(result, getObjectValue.variable);
+    });
 });

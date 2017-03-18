@@ -102,23 +102,38 @@ export default class LambdaEnvVars {
   /**
    * Gets an env var from a file within S3.
    *
-   * @param {Object}
+   * @param {string} variableName
+   * The key in process.env to which the variable is stored under.
+   *
+   * @param {Object} s3Config
+   * Config on filename, bucket name etc.
+   *
    * @return {Promise}
    * Promise that resolves the variable name
    */
-  getVarFromS3File(variableName = '', s3Config = {}) {
-    if (
-      this.s3Vars[s3Config.bucketRegion] &&
-      this.s3Vars[s3Config.bucketRegion][s3Config.bucketName] &&
-      this.s3Vars[s3Config.bucketRegion][s3Config.bucketName][s3Config.fileName] &&
-      this.s3Vars[s3Config.bucketRegion][s3Config.bucketName][s3Config.fileName][variableName]
-    ) {
-      return Promise.resolve(
-        this.s3Vars[s3Config.bucketRegion][s3Config.bucketName][s3Config.fileName][variableName],
-      );
+  getVarFromS3File(variableName, s3Config) {
+    const fileKey = s3Config.bucketRegion + s3Config.bucketName + s3Config.fileName;
+
+    if (this.s3Vars[fileKey]) {
+      return Promise.resolve(this.s3Vars[fileKey][variableName]);
     }
 
-    return Promise.resolve();
+    const s3Params = {
+      region: s3Config.bucketRegion,
+      Key: s3Config.fileName,
+      Bucket: s3Config.bucketName,
+    };
+
+    return this.s3.getObject(s3Params).promise()
+      .then(result => JSON.parse(result.Body.toString()))
+      .then((s3File) => {
+        this.s3Vars[fileKey] = s3File;
+        return this.s3Vars[fileKey][variableName];
+      })
+      .catch(() => {
+        const errorMessage = 'Could not successfully load variable from s3 file. Please make sure the file is valid JSON and that the lambda function has the sufficient role to get the S3 file.';
+        throw new Error(errorMessage);
+      });
   }
 
   /**
