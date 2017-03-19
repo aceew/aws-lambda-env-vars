@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run-script lint && nyc ava test && nyc report --reporter=text-lcov | coveralls",
+    "test-local": "npm run-script lint && nyc ava test --verbose && nyc report --reporter=lcov",
     "lint": "eslint src/*.js test/*.js",
     "build": "babel src -d build && cp package.json build/package.json && cp README.md build/README.md",
     "deploy": "npm run-script build && cd build && npm publish"
