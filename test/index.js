@@ -99,14 +99,12 @@ test('Getting custom vars, uses s3 when the location is specified', (t) => {
   const params = {
     location: 's3',
     s3Config: {
-      bucketRegion: 'eu-west-1',
       bucketName: 'bucketName',
       fileName: 'file-name-4.json',
     },
   };
 
-  const storedVarKey = params.s3Config.bucketRegion + params.s3Config.bucketName +
-    params.s3Config.fileName;
+  const storedVarKey = params.s3Config.bucketName + params.s3Config.fileName;
 
   lambdaEnvVars.s3Vars[storedVarKey] = { variableName: 'value' };
 
@@ -186,22 +184,6 @@ test('Building request params: Rejects when s3Config is missing bucketName', (t)
   const params = {
     location: 's3',
     s3Config: {
-      bucketRegion: 'bucketRegion',
-      fileName: 'fileName',
-    },
-  };
-
-  return lambdaEnvVars.buildParams(params)
-    .catch((error) => {
-      t.is(typeof error.message, 'string');
-    });
-});
-
-test('Building request params: Rejects when s3Config is missing bucketRegion', (t) => {
-  const params = {
-    location: 's3',
-    s3Config: {
-      bucketName: 'bucketName',
       fileName: 'fileName',
     },
   };
@@ -217,7 +199,6 @@ test('Building request params: Rejects when s3Config is missing fileName', (t) =
     location: 's3',
     s3Config: {
       bucketName: 'bucketName',
-      bucketRegion: 'bucketRegion',
     },
   };
 
@@ -232,7 +213,6 @@ test('Building request params: Resolves the params object', (t) => {
     location: 's3',
     s3Config: {
       bucketName: 'bucketName',
-      bucketRegion: 'bucketRegion',
       fileName: 'fileName',
     },
   };
@@ -255,13 +235,11 @@ test(
   'Getting var from s3 file: Resolves undefined when the file is stored but variable is undefined',
   (t) => {
     const defaultS3Config = {
-      bucketRegion: 'eu-west-1',
       fileName: 'file-name-1.json',
       bucketName: 'bucketName',
     };
 
-    const storedVarKey = defaultS3Config.bucketRegion + defaultS3Config.bucketName +
-      defaultS3Config.fileName;
+    const storedVarKey = defaultS3Config.bucketName + defaultS3Config.fileName;
 
     lambdaEnvVars.s3Vars[storedVarKey] = {};
 
@@ -274,13 +252,11 @@ test(
 
 test('Getting var from s3 file: Resolves var when the file is stored', (t) => {
   const defaultS3Config = {
-    bucketRegion: 'eu-west-1',
     bucketName: 'bucketName',
     fileName: 'file-name-2.json',
   };
 
-  const storedVarKey = defaultS3Config.bucketRegion + defaultS3Config.bucketName +
-    defaultS3Config.fileName;
+  const storedVarKey = defaultS3Config.bucketName + defaultS3Config.fileName;
 
   lambdaEnvVars.s3Vars[storedVarKey] = { variableName: 'value' };
 
@@ -292,7 +268,6 @@ test('Getting var from s3 file: Resolves var when the file is stored', (t) => {
 
 test('Getting var from s3 file: Rejects when the s3 file is not valid json', (t) => {
   const defaultS3Config = {
-    bucketRegion: 'eu-west-1',
     fileName: 'invalid-json.json',
     bucketName: 'bucketName',
   };
@@ -305,7 +280,6 @@ test('Getting var from s3 file: Rejects when the s3 file is not valid json', (t)
 
 test('Getting var from s3 file: Resolves the file once fetched from S3', (t) => {
   const defaultS3Config = {
-    bucketRegion: 'eu-west-1',
     fileName: 'file-name-3.json',
     bucketName: 'bucketName',
   };

@@ -18,7 +18,6 @@ export default class LambdaEnvVars {
    * Config used to get the an env var file from S3.
    *
    * @param {string} params.s3Config.bucketName
-   * @param {string} params.s3Config.bucketRegion
    * @param {string} params.s3Config.fileName
    *
    * @return {Object}
@@ -72,7 +71,6 @@ export default class LambdaEnvVars {
    * Config used to get the an env var file from S3.
    *
    * @param {string} params.s3Config.bucketName
-   * @param {string} params.s3Config.bucketRegion
    * @param {string} params.s3Config.fileName
    *
    * @return {Promise}
@@ -83,7 +81,7 @@ export default class LambdaEnvVars {
     return this.buildParams(params)
       .then((builtParams) => {
         if (builtParams.location === 's3') {
-          return this.getVarFromS3File(variableName, params.s3Config);
+          return this.getVarFromS3File(variableName, builtParams.s3Config);
         }
 
         if (this.decryptedVariables[variableName]) {
@@ -112,14 +110,13 @@ export default class LambdaEnvVars {
    * Promise that resolves the variable name
    */
   getVarFromS3File(variableName, s3Config) {
-    const fileKey = s3Config.bucketRegion + s3Config.bucketName + s3Config.fileName;
+    const fileKey = s3Config.bucketName + s3Config.fileName;
 
     if (this.s3Vars[fileKey]) {
       return Promise.resolve(this.s3Vars[fileKey][variableName]);
     }
 
     const s3Params = {
-      region: s3Config.bucketRegion,
       Key: s3Config.fileName,
       Bucket: s3Config.bucketName,
     };
@@ -163,11 +160,10 @@ export default class LambdaEnvVars {
         (
           !params.s3Config ||
           !params.s3Config.bucketName ||
-          !params.s3Config.bucketRegion ||
           !params.s3Config.fileName
         )
     ) {
-      const errorMessage = 's3Config.bucketName, s3Config.bucketRegion, s3Config.fileName are required when location is \'s3\'';
+      const errorMessage = 's3Config.bucketName and s3Config.fileName are required when location is \'s3\'';
       return Promise.reject(new Error(errorMessage));
     }
 

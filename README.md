@@ -75,7 +75,6 @@ import LambdaEnvVars from 'lambda-env-vars';
 const lambdaEnvVars = new LambdaEnvVars({
   location: 's3',
   s3Config: {
-    region: 'eu-west-2',
     bucketName: 'my-env-var-bucket',
     fileName: 'my-env-var-filename.json',
   },
@@ -107,7 +106,6 @@ Optionally the source of environment variables can be a JSON file within an S3 b
   location: 's3',
   s3Config: {
     bucketName: 'name-of-bucket',
-    bucketRegion 'eu-west-2',
     fileName: 'filename.json', // Name of the JSON file containing the env vars
   },
 }
@@ -120,7 +118,6 @@ The available attributes of the params object are as follows:
 | location | string | 'lambdaConfig' | Can be 'lambdaConfig' or 's3'. The location the environment variables are stored.
 | s3Config | object | {} | Required when location is equal to 's3'. Fields that specify the location of the env var JSON file |
 | s3Config.bucketName | string | | The name of the bucket containing the env var file. |
-| s3Config.bucketRegion | string | | The region of the bucket. |
 | s3Config.fileName | string | | The file name of the env var JSON file. |
 
 
